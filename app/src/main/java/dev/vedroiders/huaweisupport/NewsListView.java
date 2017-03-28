@@ -10,7 +10,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -23,7 +22,6 @@ import java.util.ArrayList;
  */
 public class NewsListView extends ScrollView {
 
-    ArrayList<View> unSizedViews = new ArrayList<>();
     private LinearLayout attachedLayout;
     private String TAG = "ItemsContainer";
     private NewsViewer newsViewer;
@@ -38,23 +36,23 @@ public class NewsListView extends ScrollView {
 
     public NewsListView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init();
+        init(context);
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public NewsListView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
-        init();
+        init(context);
     }
 
-    private void init() {
-        attachedLayout = new LinearLayout(getContext());
+    private void init(Context context) {
+        attachedLayout = new LinearLayout(context);
         attachedLayout.setOrientation(LinearLayout.VERTICAL);
         attachedLayout.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams
                 .MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT));
         this.addView(attachedLayout);
-        newsViewer = new NewsViewer(getContext());
+        newsViewer = new NewsViewer(context);
     }
 
     public void setNews(ArrayList<NewsItem> items) {
@@ -100,7 +98,12 @@ public class NewsListView extends ScrollView {
 
         public NewsViewer(Context context) {
             super(context);
-            getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
+            init();
+        }
+
+        void init() {
+//            getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
+
         }
 
         private void unbindFromParent() {

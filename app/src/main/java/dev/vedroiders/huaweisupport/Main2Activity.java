@@ -1,7 +1,6 @@
 package dev.vedroiders.huaweisupport;
 
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -11,6 +10,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -18,6 +19,8 @@ public class Main2Activity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     private ArrayList<NewsItem> newslist;
     private NewsListView newsListView;
+    private Consumer consumer;
+    private NavigationView navigationView;
 
 
     @Override
@@ -27,11 +30,18 @@ public class Main2Activity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        try {
+            consumer = (Consumer) getIntent().getSerializableExtra("consumer");
+        } catch (Exception e) {
+            Toast.makeText(this, "Ошибка загрузки профиля! :(", Toast.LENGTH_SHORT).show();
+            finish();
+        }
+
+        findViewById(R.id.fab)
+                .setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                new MailSender(Main2Activity.this, "test@test.ru").show();
+                new MailSender(Main2Activity.this, consumer).show();
             }
         });
 
@@ -42,11 +52,27 @@ public class Main2Activity extends AppCompatActivity
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+        setNavigationView();
 
         newsListView = (NewsListView) findViewById(R.id.news_listview);
 
+    }
+
+    private void setNavigationView() {
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+        ((TextView) navigationView.getHeaderView(0).findViewById(R.id.model))
+                .setText(String.format("Model: %s", consumer.getModel()));
+
+        ((TextView) navigationView.getHeaderView(0).findViewById(R.id.name))
+                .setText(consumer.getName());
+
+        ((TextView) navigationView.getHeaderView(0).findViewById(R.id.email))
+                .setText(consumer.getEmail());
+    }
+
+    Consumer getConsumer() {
+        return consumer;
     }
 
     private void setNews() {
@@ -66,6 +92,7 @@ public class Main2Activity extends AppCompatActivity
             }
         }).start();
     }
+
 
     @Override
     protected void onStart() {
@@ -111,25 +138,6 @@ public class Main2Activity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation webView item clicks here.
         int id = item.getItemId();
-
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        }
-        else if (id == R.id.nav_gallery) {
-
-        }
-        else if (id == R.id.nav_slideshow) {
-
-        }
-        else if (id == R.id.nav_manage) {
-
-        }
-        else if (id == R.id.nav_share) {
-
-        }
-        else if (id == R.id.nav_send) {
-
-        }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

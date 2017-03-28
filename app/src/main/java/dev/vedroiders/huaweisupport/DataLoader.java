@@ -1,11 +1,12 @@
 package dev.vedroiders.huaweisupport;
 
 
+import android.text.Editable;
 import android.util.Log;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
 
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -13,12 +14,14 @@ import java.util.ArrayList;
 /**
  * Created by mike on 25.03.17.
  */
-public class DataLoader {
+class DataLoader {
 
 
+    static String FILE_PATH;
     private static String TAG = "DataLoader";
+    private static String FILE_NAME = "consumer";
 
-    public static ArrayList<NewsItem> loadNews() {
+    static ArrayList<NewsItem> loadNews() {
 
         ArrayList<NewsItem> news = new ArrayList<>();
 
@@ -81,7 +84,7 @@ public class DataLoader {
         return news;
     }
 
-    void dataTest() {
+    static void dataTest() {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -93,4 +96,60 @@ public class DataLoader {
         }).start();
     }
 
+
+    static Consumer loadProfile() {
+
+        Consumer consumer = null;
+
+        try {
+
+            FileInputStream fis = new FileInputStream(FILE_PATH + FILE_NAME);
+            ObjectInputStream ois = new ObjectInputStream(fis);
+            consumer = (Consumer) ois.readObject();
+            Log.d("Consumer", "Loaded " + consumer.getEmail());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return consumer;
+    }
+
+    static Consumer tryLogin(Editable text, Editable passEditText) {
+
+        return new TestConsumer();
+
+    }
+
+    static void saveProfile(Consumer consumer) {
+        try {
+            File f = new File(FILE_PATH + FILE_NAME);
+            if (!f.getParentFile().exists()
+                    && f.getParentFile().mkdirs()) {
+                f.createNewFile();
+            }
+            else if (!f.exists()) {
+                f.createNewFile();
+            }
+            FileOutputStream fos = new FileOutputStream(FILE_PATH + FILE_NAME);
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+            oos.writeObject(consumer);
+            oos.close();
+            fos.flush();
+            fos.close();
+            Log.d("Consumer", "Saved " + consumer.getEmail());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
+    static boolean checkMail() {
+        return true;
+    }
+
+    public static boolean registerProfile(Consumer consumer) {
+
+        return true;
+    }
 }
