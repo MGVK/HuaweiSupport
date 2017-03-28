@@ -13,7 +13,12 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.net.MalformedURLException;
 import java.util.ArrayList;
+
+import dev.vedroiders.huaweisupport.kupihleba.Client;
+import dev.vedroiders.huaweisupport.kupihleba.HtmlParser;
+import dev.vedroiders.huaweisupport.kupihleba.Interaction;
 
 public class Main2Activity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -41,7 +46,7 @@ public class Main2Activity extends AppCompatActivity
                 .setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                new MailSender(Main2Activity.this, consumer).show();
+                new MailSender(Main2Activity.this, consumer.getEmail()).show();
             }
         });
 
@@ -75,6 +80,22 @@ public class Main2Activity extends AppCompatActivity
         return consumer;
     }
 
+    private void test() {
+        Client client = new Client();
+        Interaction interaction = new Interaction();
+        interaction.email = "kupihleba@yandex.ru";
+        interaction.login = "user";
+        interaction.password = "user";
+        interaction.message = "Hi VOVAN LOOOL PPPFFF hahahhahaah";
+        client.sendAsync(interaction);
+
+    }
+    private void testCookie()
+    {
+
+    }
+
+
     private void setNews() {
         new Thread(new Runnable() {
             @Override
@@ -98,6 +119,7 @@ public class Main2Activity extends AppCompatActivity
     protected void onStart() {
         super.onStart();
         setNews();
+        test();
     }
 
     @Override
