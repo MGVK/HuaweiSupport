@@ -51,7 +51,7 @@ public class LoginActivity extends AppCompatActivity {
     public void onLoginClick(View view) {
 
         if (checkPassAndMail() && (consumer = DataLoader.tryLogin(
-                loginEdit.getText(), passEdit.getText())) != null) {
+                loginEdit.getText().toString(), passEdit.getText().toString())) != null) {
             DataLoader.saveProfile(consumer);
             startMainActivity();
         }

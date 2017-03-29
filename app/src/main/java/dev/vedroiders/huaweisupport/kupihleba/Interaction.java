@@ -10,13 +10,6 @@ import java.io.Serializable;
  */
 public class Interaction implements Serializable
 {
-    enum Type
-    {
-        REGISTER,
-        LOGIN,
-        DATA
-    }
-
     public Type type;
     public String message;
     public String login;
@@ -24,12 +17,6 @@ public class Interaction implements Serializable
     public String email;
     public String model;
     public String number;
-
-    @Override
-    public Interaction clone(){
-        return new Interaction(this);
-    }
-
     public Interaction(Type type, String message, String login, String password, String email, String model, String number) {
         this.type     = type;
         this.message  = message;
@@ -39,7 +26,6 @@ public class Interaction implements Serializable
         this.model    = model;
         this.number   = number;
     }
-
     public Interaction(Interaction interaction) {
         this.type     = interaction.type;
         this.message  = interaction.message;
@@ -51,6 +37,26 @@ public class Interaction implements Serializable
     }
 
     public Interaction() {
+        this.type = Type.NONE;
+    }
+
+    public static Type fromString(String string) {
+        Type type = Type.NONE;
+        if (string.equals("REGISTER")) {
+            type = Type.REGISTER;
+        }
+        if (string.equals("LOGIN")) {
+            type = Type.LOGIN;
+        }
+        if (string.equals("DATA")) {
+            type = Type.DATA;
+        }
+        return type;
+    }
+
+    @Override
+    public Interaction clone() {
+        return new Interaction(this);
     }
 
     @Override
@@ -64,5 +70,23 @@ public class Interaction implements Serializable
                 ", model='" + model + '\'' +
                 ", number='" + number + '\'' +
                 '}';
+    }
+
+    public enum Type {
+        REGISTER,
+        LOGIN,
+        DATA,
+        NONE;
+
+        @Override
+        public String toString() {
+            if (this == REGISTER)
+                return "REGISTER";
+            if (this == LOGIN)
+                return "LOGIN";
+            if (this == DATA)
+                return "DATA";
+            return null;
+        }
     }
 }

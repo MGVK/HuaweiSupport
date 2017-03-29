@@ -3,16 +3,24 @@ package dev.vedroiders.huaweisupport;
 
 import android.content.Context;
 import android.graphics.Typeface;
-import android.text.Editable;
 import android.util.Log;
+
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import dev.vedroiders.huaweisupport.kupihleba.Client;
+import dev.vedroiders.huaweisupport.kupihleba.Interaction;
 
 /**
  * Created by mike on 25.03.17.
@@ -147,10 +155,17 @@ class DataLoader {
      * @param pass
      * @return профиль пользователя, если успех, иначе - null,
      */
-    static Consumer tryLogin(Editable login, Editable pass) {
-
-        return new TestConsumer();
-
+    static void tryLogin(String login, String pass) {
+        Interaction interaction = new Interaction();
+        interaction.type = Interaction.Type.LOGIN;
+        interaction.login = login;
+        interaction.password = pass;
+        new Client() {
+            @Override
+            public void gotResponse(boolean isOk, Interaction response) {
+                // YOUR CODE HERE!!!!!!!
+            }
+        }.sendAsync(interaction);
     }
 
     static void saveProfile(Consumer consumer) {
@@ -183,8 +198,17 @@ class DataLoader {
      *
      * @return
      */
-    static boolean checkMail() {
-        return true;
+    static void checkMail(String login) {
+
+        Interaction interaction = new Interaction();
+        interaction.type = Interaction.Type.DATA;
+        new Client() {
+            @Override
+            public void gotResponse(boolean hasLogin, Interaction response) {
+                // YOUR CODE HERE!!!!!!!
+            }
+        }.sendAsync(interaction);
+
     }
 
     /**
@@ -194,6 +218,20 @@ class DataLoader {
      */
 
     public static boolean registerProfile(Consumer consumer) {
+        Interaction interaction = new Interaction();
+        interaction.type = Interaction.Type.REGISTER;
+        interaction.login = consumer.getEmail();
+        interaction.password = consumer.getPass();
+        interaction.email = consumer.getEmail();
+        interaction.model = consumer.getModel();
+        interaction.number = consumer.getPhone();
+
+        new Client() {
+            @Override
+            public void gotResponse(boolean isOk, Interaction response) {
+                // YOUR CODE HERE!!!!!!!
+            }
+        }.sendAsync(interaction);
 
         return true;
     }

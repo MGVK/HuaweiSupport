@@ -13,11 +13,9 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 
 import dev.vedroiders.huaweisupport.kupihleba.Client;
-import dev.vedroiders.huaweisupport.kupihleba.HtmlParser;
 import dev.vedroiders.huaweisupport.kupihleba.Interaction;
 
 public class Main2Activity extends AppCompatActivity
@@ -87,11 +85,10 @@ public class Main2Activity extends AppCompatActivity
         interaction.login = "user";
         interaction.password = "user";
         interaction.message = "Hi VOVAN LOOOL PPPFFF hahahhahaah";
+        interaction.model = "Unknown";
+        interaction.number = "123";
+        interaction.type = Interaction.Type.REGISTER;
         client.sendAsync(interaction);
-
-    }
-    private void testCookie()
-    {
 
     }
 
