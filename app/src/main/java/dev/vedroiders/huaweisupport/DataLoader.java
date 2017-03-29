@@ -1,6 +1,8 @@
 package dev.vedroiders.huaweisupport;
 
 
+import android.content.Context;
+import android.graphics.Typeface;
 import android.text.Editable;
 import android.util.Log;
 import org.xmlpull.v1.XmlPullParser;
@@ -10,6 +12,7 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by mike on 25.03.17.
@@ -20,6 +23,8 @@ class DataLoader {
     static String FILE_PATH;
     private static String TAG = "DataLoader";
     private static String FILE_NAME = "consumer";
+    private static HashMap<String, Typeface> typefaces = new HashMap<>();
+
 
     static ArrayList<NewsItem> loadNews() {
 
@@ -84,6 +89,13 @@ class DataLoader {
         return news;
     }
 
+    static void removeProfile() {
+        File f = new File(FILE_PATH + FILE_NAME);
+        if (f.exists()) {
+            f.delete();
+        }
+    }
+
     static void dataTest() {
         new Thread(new Runnable() {
             @Override
@@ -94,6 +106,19 @@ class DataLoader {
 //                DataLoader.test();
             }
         }).start();
+    }
+
+    static Typeface getTypeface(Context context, String name) {
+        Typeface typeface = typefaces.get(name);
+
+        if (typeface == null) {
+            typefaces.put(name,
+                    typeface = (Typeface.createFromAsset(context.getAssets(), name + ""
+                            + ".ttf"))
+            );
+        }
+
+        return typeface;
     }
 
 
@@ -114,7 +139,15 @@ class DataLoader {
         return consumer;
     }
 
-    static Consumer tryLogin(Editable text, Editable passEditText) {
+
+    /**
+     * попытка залогиниться
+     *
+     * @param login
+     * @param pass
+     * @return профиль пользователя, если успех, иначе - null,
+     */
+    static Consumer tryLogin(Editable login, Editable pass) {
 
         return new TestConsumer();
 
@@ -144,9 +177,21 @@ class DataLoader {
 
     }
 
+
+    /**
+     * Проверка существования акка на серваке
+     *
+     * @return
+     */
     static boolean checkMail() {
         return true;
     }
+
+    /**
+     * запрос на регистрацию
+     * @param consumer профиль для регистрации
+     * @return true, если успешно, false, нет нет
+     */
 
     public static boolean registerProfile(Consumer consumer) {
 
