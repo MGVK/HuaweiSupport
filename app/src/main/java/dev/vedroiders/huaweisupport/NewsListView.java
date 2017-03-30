@@ -54,6 +54,8 @@ public class NewsListView extends ScrollView {
                 .MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT));
         this.addView(attachedLayout);
+        setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT));
         newsViewer = new NewsViewer(getContext());
     }
 
@@ -73,10 +75,15 @@ public class NewsListView extends ScrollView {
                 .inflate(R.layout.news_item,
                         null);
 
-        ((TextView) layout.findViewById(R.id.title))
-                .setText((newsItem.title));
-        ((TextView) layout.findViewById(R.id.description))
-                .setText(Html.fromHtml(newsItem.description));
+        TextView title =
+                ((TextView) layout.findViewById(R.id.title));
+        title.setText((newsItem.title));
+        title.setTypeface(DataLoader.getTypeface(getContext(), "Century_Gothic"));
+
+        TextView content =
+                ((TextView) layout.findViewById(R.id.description));
+        content.setText(Html.fromHtml(newsItem.description));
+        content.setTypeface(DataLoader.getTypeface(getContext(), "Verdana"));
 
         layout.setOnClickListener(new OnClickListener() {
             @Override
@@ -87,7 +94,6 @@ public class NewsListView extends ScrollView {
                         .show();
             }
         });
-
 
 //        unSizedViews.add(layout);
 //        sizePostCorrection(unSizedViews.size() - 1);

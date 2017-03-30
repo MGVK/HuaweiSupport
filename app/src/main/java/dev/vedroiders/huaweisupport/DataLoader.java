@@ -4,28 +4,21 @@ package dev.vedroiders.huaweisupport;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.util.Log;
-
+import dev.vedroiders.huaweisupport.kupihleba.Client;
+import dev.vedroiders.huaweisupport.kupihleba.Interaction;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStreamReader;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import dev.vedroiders.huaweisupport.kupihleba.Client;
-import dev.vedroiders.huaweisupport.kupihleba.Interaction;
-
 /**
  * Created by mike on 25.03.17.
  */
-class DataLoader {
+public class DataLoader {
 
 
     static String FILE_PATH;
@@ -34,7 +27,7 @@ class DataLoader {
     private static HashMap<String, Typeface> typefaces = new HashMap<>();
 
 
-    static ArrayList<NewsItem> loadNews() {
+    public static ArrayList<NewsItem> loadNews() {
 
         ArrayList<NewsItem> news = new ArrayList<>();
 
@@ -155,17 +148,14 @@ class DataLoader {
      * @param pass
      * @return профиль пользователя, если успех, иначе - null,
      */
-    static void tryLogin(String login, String pass) {
+    static void tryLogin(String login, String pass, Client client) {
         Interaction interaction = new Interaction();
         interaction.type = Interaction.Type.LOGIN;
         interaction.login = login;
         interaction.password = pass;
-        new Client() {
-            @Override
-            public void gotResponse(boolean isOk, Interaction response) {
-                // YOUR CODE HERE!!!!!!!
-            }
-        }.sendAsync(interaction);
+
+
+        client.sendAsync(interaction);
     }
 
     static void saveProfile(Consumer consumer) {
@@ -198,16 +188,11 @@ class DataLoader {
      *
      * @return
      */
-    static void checkMail(String login) {
+    static void checkMail(String login, Client client) {
 
         Interaction interaction = new Interaction();
         interaction.type = Interaction.Type.DATA;
-        new Client() {
-            @Override
-            public void gotResponse(boolean hasLogin, Interaction response) {
-                // YOUR CODE HERE!!!!!!!
-            }
-        }.sendAsync(interaction);
+        client.sendAsync(interaction);
 
     }
 
@@ -217,7 +202,7 @@ class DataLoader {
      * @return true, если успешно, false, нет нет
      */
 
-    public static boolean registerProfile(Consumer consumer) {
+    public static boolean registerProfile(Consumer consumer, Client client) {
         Interaction interaction = new Interaction();
         interaction.type = Interaction.Type.REGISTER;
         interaction.login = consumer.getEmail();
@@ -226,12 +211,7 @@ class DataLoader {
         interaction.model = consumer.getModel();
         interaction.number = consumer.getPhone();
 
-        new Client() {
-            @Override
-            public void gotResponse(boolean isOk, Interaction response) {
-                // YOUR CODE HERE!!!!!!!
-            }
-        }.sendAsync(interaction);
+        client.sendAsync(interaction);
 
         return true;
     }

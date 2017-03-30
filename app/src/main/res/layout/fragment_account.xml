@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/ch_name"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/clickable"
+        android:gravity="center_vertical"
+        android:paddingLeft="20dp"
+        android:text="@string/fragment_account_name"
+        android:textSize="20sp"/>
+
+    <TextView
+        android:id="@+id/ch_pass"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/clickable"
+        android:gravity="center_vertical"
+        android:paddingLeft="20dp"
+        android:text="@string/fragment_account_pass"
+        android:textSize="20sp"/>
+
+    <TextView
+        android:id="@+id/ch_phone"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/clickable"
+        android:gravity="center_vertical"
+        android:paddingLeft="20dp"
+        android:text="@string/fragment_account_phone"
+        android:textSize="20sp"/>
+
+
+</LinearLayout>

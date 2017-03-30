@@ -38,6 +38,12 @@ public class Interaction implements Serializable
 
     public Interaction() {
         this.type = Type.NONE;
+        this.message = "_";
+        this.login = "_";
+        this.password = "_";
+        this.email = "_";
+        this.model = "_";
+        this.number = "_";
     }
 
     public static Type fromString(String string) {

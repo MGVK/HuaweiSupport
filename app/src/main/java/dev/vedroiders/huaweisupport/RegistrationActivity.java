@@ -7,10 +7,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
+import dev.vedroiders.huaweisupport.kupihleba.Client;
+import dev.vedroiders.huaweisupport.kupihleba.Interaction;
 
 public class RegistrationActivity extends AppCompatActivity {
 
     private Consumer consumer;
+    private boolean isRegistration = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,12 +23,19 @@ public class RegistrationActivity extends AppCompatActivity {
     }
 
     private void initDeviceInfo() {
+
         ((EditText) findViewById(R.id.model)).setText(
-                Build.MODEL + " " + Build.PRODUCT
+                Build.MODEL
         );
     }
 
     public void onRegistrationClick(View view) {
+        if (isRegistration) {
+            Toast.makeText(this, "Ожидание ответа от сервера", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        isRegistration = true;
         if (!checkMail()) {
             notifyIncorrectMail();
             return;
@@ -47,15 +57,45 @@ public class RegistrationActivity extends AppCompatActivity {
                 ((EditText) findViewById(R.id.phone)).getText().toString()
         );
 
-        if (DataLoader.registerProfile(consumer)) {
-            notifySuccessfulRegistration();
-            DataLoader.saveProfile(consumer);
-            setResult(RESULT_OK, new Intent().putExtra("consumer", consumer));
-            finish();
-        }
-        else {
-            notifyUnsuccessfulRegistration();
-        }
+        DataLoader.registerProfile(consumer, new Client() {
+            @Override
+            public void gotResponse(boolean isOk, Interaction responseQuery) {
+                isRegistration = false;
+                if (isOk) {
+
+                    final Consumer consumer = new Consumer(
+                            responseQuery.model,
+                            responseQuery.email,
+                            responseQuery.password,
+                            responseQuery.login,
+                            responseQuery.number
+                    );
+
+
+                    DataLoader.saveProfile(consumer);
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            notifySuccessfulRegistration();
+
+                            setResult(RESULT_OK, new Intent().putExtra("consumer", consumer));
+                            finish();
+                        }
+                    });
+
+                }
+                else {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            notifyUnsuccessfulRegistration();
+                        }
+                    });
+
+                }
+            }
+        });
 
     }
 
@@ -82,11 +122,20 @@ public class RegistrationActivity extends AppCompatActivity {
     }
 
     private boolean checkMail() {
-        String s = ((EditText) findViewById(R.id.email)).getText().toString();
-        return s.length() >= 5
-                && s.contains("@")
-                && s.contains(".")
-                && DataLoader.checkMail();
+//        String s = ((EditText) findViewById(R.id.email)).getText().toString();
+////s.length() >= 5
+////                && s.contains("@")
+////                && s.contains(".")
+////                &&
+//
+//
+//                DataLoader.checkMail("", new Client() {
+//            @Override
+//            public void gotResponse(boolean isOk, Interaction responseQuery) {
+//
+//            }
+//        });
+        return true;
     }
 
     private boolean checkPass() {

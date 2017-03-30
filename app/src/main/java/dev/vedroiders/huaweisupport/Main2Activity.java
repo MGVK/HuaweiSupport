@@ -1,5 +1,9 @@
 package dev.vedroiders.huaweisupport;
 
+import android.app.Fragment;
+import android.app.FragmentTransaction;
+import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -12,60 +16,30 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
+import dev.vedroiders.huaweisupport.fragments.AccountFragment;
+import dev.vedroiders.huaweisupport.fragments.NewsFragment;
+import dev.vedroiders.huaweisupport.fragments.SettingsFragment;
 
 import java.util.ArrayList;
 
-import dev.vedroiders.huaweisupport.kupihleba.Client;
-import dev.vedroiders.huaweisupport.kupihleba.Interaction;
-
 public class Main2Activity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+    long backTime = 0;
+    Fragment currentFragment;
     private ArrayList<NewsItem> newslist;
     private NewsListView newsListView;
     private Consumer consumer;
     private NavigationView navigationView;
-
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main2);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        try {
-            consumer = (Consumer) getIntent().getSerializableExtra("consumer");
-        } catch (Exception e) {
-            Toast.makeText(this, "Ошибка загрузки профиля! :(", Toast.LENGTH_SHORT).show();
-            finish();
-        }
-
-        findViewById(R.id.fab)
-                .setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                new MailSender(Main2Activity.this, consumer.getEmail()).show();
-            }
-        });
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open,
-                R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
-        toggle.syncState();
-
-        setNavigationView();
-
-        newsListView = (NewsListView) findViewById(R.id.news_listview);
-
-    }
+    private NewsFragment newsFragment;
+    private AccountFragment accountFragment;
+    private SettingsFragment settingsFragment;
+    private Toolbar toolbar;
 
     private void setNavigationView() {
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         ((TextView) navigationView.getHeaderView(0).findViewById(R.id.model))
-                .setText(String.format("Model: %s", consumer.getModel()));
+                .setText(String.format("Model: %s", Build.MODEL));
 
         ((TextView) navigationView.getHeaderView(0).findViewById(R.id.name))
                 .setText(consumer.getName());
@@ -78,56 +52,65 @@ public class Main2Activity extends AppCompatActivity
         return consumer;
     }
 
-    private void test() {
-        Client client = new Client();
-        Interaction interaction = new Interaction();
-        interaction.email = "kupihleba@yandex.ru";
-        interaction.login = "user";
-        interaction.password = "user";
-        interaction.message = "Hi VOVAN LOOOL PPPFFF hahahhahaah";
-        interaction.model = "Unknown";
-        interaction.number = "123";
-        interaction.type = Interaction.Type.REGISTER;
-        client.sendAsync(interaction);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main2);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        toolbar.setLogo(R.drawable.huawei);
 
-    }
+//        android.support.v7.app.ActionBar menu = getSupportActionBar();
+//        menu.setDisplayShowHomeEnabled(true);
+//        menu.setLogo(R.drawable.);
+//        menu.setDisplayUseLogoEnabled(true);
 
+        try {
+            consumer = (Consumer) getIntent().getSerializableExtra("consumer");
+        } catch (Exception e) {
+            Toast.makeText(this, "Ошибка загрузки профиля! :(", Toast.LENGTH_SHORT).show();
+            finish();
+        }
 
-    private void setNews() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-
-                newslist = DataLoader.loadNews();
-
-                runOnUiThread(new Runnable() {
+        findViewById(R.id.fab)
+                .setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void run() {
-                        newsListView.setNews(newslist);
+                    public void onClick(View view) {
+                        new MailSender(Main2Activity.this, consumer.getEmail()).show();
                     }
                 });
 
-            }
-        }).start();
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open,
+                R.string.navigation_drawer_close);
+        drawer.setDrawerListener(toggle);
+        toggle.syncState();
+
+        setNavigationView();
+
+        initFragments();
+//        newsListView = (NewsListView) findViewById(R.id.news_listview);
+
     }
 
+    private void openNewsFragment() {
+        FragmentTransaction tr = getFragmentManager().beginTransaction();
+
+        tr.add(R.layout.content_main2, newsFragment);
+        tr.commit();
+    }
 
     @Override
     protected void onStart() {
         super.onStart();
-        setNews();
-        test();
+//        openNewsFragment();
     }
 
-    @Override
-    public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        }
-        else {
-            super.onBackPressed();
-        }
+    void initFragments() {
+        newsFragment = new NewsFragment(this);
+        accountFragment = new AccountFragment(this);
+        settingsFragment = new SettingsFragment(this);
     }
 
     @Override
@@ -152,11 +135,92 @@ public class Main2Activity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onBackPressed() {
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        }
+        else {
+            if (getFragmentManager().getBackStackEntryCount() == 0) {
+                if (backTime == 0) {
+                    backTime = System.currentTimeMillis();
+                    Toast.makeText(this, "", Toast.LENGTH_SHORT).show();
+                }
+                else {
+//                if()
+                }
+            }
+            else {
+                super.onBackPressed();
+            }
+        }
+    }
+
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation webView item clicks here.
         int id = item.getItemId();
+
+        android.app.FragmentManager manager = getFragmentManager();
+
+        android.app.FragmentTransaction transaction =
+                manager.beginTransaction();
+        if (currentFragment != null) {
+            transaction.remove(currentFragment);
+        }
+
+        switch (id) {
+
+            case R.id.menu_news: {
+                if (manager.findFragmentById(newsFragment.getId()) == null) {
+                    transaction.add(R.id.content_main2, newsFragment);
+                    currentFragment = newsFragment;
+
+                }
+
+//                getActionBar().setTitle("News");
+
+                break;
+            }
+
+            case R.id.menu_account: {
+                if (manager.findFragmentById(accountFragment.getId()) == null) {
+
+                    transaction.add(R.id.content_main2, accountFragment);
+                    currentFragment = accountFragment;
+                }
+
+//                getActionBar().setTitle("Account");
+
+                break;
+            }
+            case R.id.menu_settings: {
+                if (manager.findFragmentById(settingsFragment.getId()) == null) {
+                    transaction.add(R.id.content_main2, settingsFragment);
+                    currentFragment = settingsFragment;
+                }
+//                getActionBar().setTitle("Settings");
+
+                break;
+            }
+
+            case R.id.menu_report: {
+                new MailSender(Main2Activity.this, consumer.getEmail()).show();
+                break;
+            }
+
+            case R.id.menu_logout: {
+                consumer = null;
+                DataLoader.removeProfile();
+                startActivity(new Intent(this, LoginActivity.class));
+                finish();
+                break;
+            }
+        }
+
+        transaction.commit();
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
